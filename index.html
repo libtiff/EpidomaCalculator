@@ -1,0 +1,173 @@
+<html>
+<head>
+<title>Υπολογισμός Επιδόματος</title>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+<script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+<link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+
+<style>
+.row {
+  background: #f8f9fa;
+  margin-top: 20px;
+}
+
+.col {
+  border: solid 1px #6c757d;
+  padding: 10px;
+}
+</style>
+
+<script>
+
+function sum() 
+{
+      var txtAnnualSalary = document.getElementById('txt2018salary').value;
+	  
+	  var dailyamount= (((parseInt(txtAnnualSalary)/52)/6)*60)/100;
+	  document.getElementById('txtdailyamount').value=dailyamount;
+	  
+      var firstpayment= (txtdailyamount.value*24);
+	  document.getElementById('txtamount1lockm').value=firstpayment;
+	  
+	  var temp=document.getElementById('numberdays').value;
+	  var secondpayment= (txtdailyamount.value*temp);
+	  document.getElementById('txtamount2lockm').value=secondpayment;    
+}
+
+$(document).ready(function() 
+{
+  $( "#fromdate" ).datepicker(
+	{
+		altField: "#alternate",
+		altFormat: "DD, d MM, yy",
+		beforeShowDay: function(date) 
+		{
+			return [(date.getDay() > 0), ''];
+		},
+		minDate: null,
+		maxDate: null,
+		onSelect: function(selected) 
+		{
+		  $("#to").datepicker("option","minDate", selected);
+		}
+	});
+
+  $( "#todate" ).datepicker(
+	{
+		altField: "#alternate1",
+		altFormat: "DD, d MM, yy",
+		beforeShowDay: function(date) 
+		{
+			return [(date.getDay() > 0), ''];
+		},
+		minDate:null,
+		maxDate:null,
+		onSelect: function(selected) 
+		{
+		  $("#from").datepicker("option","maxDate", selected);
+		  wdays(); //Call wdays function to calculate the sum of days excluding Sundays
+		}
+	});
+});
+
+ function wdays() 
+ {
+    var MS_PER_DAY = 24 * 60 * 60 * 1000;
+	
+
+        var d1 = $('#fromdate').datepicker('getDate');
+        var d2 = $('#todate').datepicker('getDate');
+				
+        var diff = Math.floor((d2 - d1) / MS_PER_DAY);
+        diff++;
+		
+		if ((d2.getDate()==d1.getDate()) && (d1.getDay()<7))
+		{
+			diff=1;
+		}
+		
+		var work = diff;
+        var temp = d1;
+		
+        while (temp <= d2) 
+		{
+            if (temp.getDay()==0) 
+			{
+				//Remove Sundays
+                work--;
+            }
+            temp.setDate(temp.getDate()+1);
+        }
+		document.getElementById('numberdays').value=work;    
+}
+
+
+
+</script>
+
+</head>
+<body>
+<center>
+Εργαζόμενος ο οποίος εργάστηκε ολόκληρο το 2018 με μισθό €1.000 για 12 μήνες και έλαβε και 13ο μισθό:<br>
+€1.000 Χ 13 μήνες = €13.000 / 52 εβδομάδες = €250 / 6 μέρες = €41,66 Χ 60% = €25 ημερήσιο επίδομα.<br>
+Βάσει των πιο πάνω υπολογισμών, εάν η αίτηση για το Ειδικό Ανεργιακό Επίδομα ήταν από 16/3/2020 μέχρι 12/4/2020, <br>
+αυτό σημαίνει ότι αφορά 24 εργάσιμες μέρες (εξαιρούνται οι Κυριακές) και το καταβλητέο επίδομα είναι 24 Χ €25 = €600<br>
+</center>
+
+<div class="container">
+	<div class="row">
+		<div class="col-12 form-group has-feedback">
+			<label>Από <span class="text-danger">*</span></label>
+			<input type="text" class="form-control has-feedback-left" id="fromdate" 
+				   placeholder="MM/DD/YYYY" name="fromdate">
+			<font size="1">Εξαιρούνται οι Κυριακές , γιαυτό και δεν μπορείτε να τις επιλέξετε</font>
+		</div>
+		<div class="col-12 form-group has-feedback">
+			<label>Μέχρι <span class="text-danger">*</span></label>
+			<input type="text" class="form-control has-feedback-left" id="todate" 
+				   placeholder="MM/DD/YYYY" name="todate">
+			<font size="1">Εξαιρούνται οι Κυριακές , γιαυτό και δεν μπορείτε να τις επιλέξετε</font>
+		</div>
+		<div class="col-12 form-group has-feedback">
+			<label>Σύνολο Ημερών <span class="text-danger">*</span></label>
+			<input type="text" class="form-control has-feedback-left" name="numberdays" 
+				   id="numberdays" disabled>
+			<font size="1">Αυτόματος υπολογισμός ημερών - Οι Κυριακές αφαιρόυνται απο το σύνολο)</font>
+		</div>
+		<div class="col-12 form-group has-feedback">
+			<label>Σύνολο ασφαληστικών αποδοχών 2018 (€)<span class="text-danger">*</span></label>
+			<input type="text" class="form-control has-feedback-left" name="txt2018salary" 
+				   id="txt2018salary"  onkeyup="sum();">
+		    <font size="1">(O μισθός σας επί 12 μήνες ή επι 13 έαν καταβάλετε 13ος μισθός)</font>
+		</div>
+		<div class="col-12 form-group has-feedback">
+			<label>Ημερήσιο Επίδομα (€)</label>
+			<input type="text" class="form-control has-feedback-left" name="txtdailyamount" 
+				   id="txtdailyamount" disabled>
+		</div>
+		<div class="col-12 form-group has-feedback">
+			<label>Σύνολο Πρώτου Επιδόματος (€)</label>
+			<input type="text" class="form-control has-feedback-left" name="txtamount1lockm" 
+				   id="txtamount1lockm" disabled>
+			<font size="1">(Εάν τα ποσά καταχωρήθηκαν ορθά , εδώ θα αναγράφετε το ποσό του επιδόματος που λάβατε αυτό τον μήνα)</font>
+		</div>
+		<div class="col-12 form-group has-feedback">
+			<label>Σύνολο Επόμενου Επιδόματος (€)</label>
+			<input type="text" class="form-control has-feedback-left" name="txtamount2lockm" 
+				   id="txtamount2lockm" disabled>
+		</div>
+		<div class="col-12 form-group has-feedback">
+			<label>Υπολογισμός</label>
+			<button onclick="sum()" class="form-control has-feedback-left" name="btnsubmit" 
+				   id="btnsubmit" onMouseOut="this.style.backgroundColor='#FFF'" onMouseOver="this.style.backgroundColor='#2e856e'">Calculate</button><br>
+			<center>Created by <a href="http://libtiff.eu5.net">AntonyGeo.</a> 2020 #StayHome</center>
+		</div>
+	</div>  
+</div>
+</body>
+</html>
